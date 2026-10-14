@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+ <asx:values>
+  <DATA>
+   <MASTER_LANGUAGE>R</MASTER_LANGUAGE>
+   <STARTING_FOLDER>/src/</STARTING_FOLDER>
+   <FOLDER_LOGIC>FULL</FOLDER_LOGIC>
+   <IGNORE>
+    <item>/.gitignore</item>
+    <item>/README.md</item>
+    <item>/AGENTS.md</item>
+    <item>/PLAN.md</item>
+    <item>/package.json</item>
+    <item>/package-lock.json</item>
+    <item>/abaplint.json</item>
+    <item>/abaplint-all.json</item>
+    <item>/Makefile</item>
+   </IGNORE>
+  </DATA>
+ </asx:values>
+</asx:abap>

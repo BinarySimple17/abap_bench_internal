@@ -1,0 +1,34 @@
+{
+  "//": "Гейт-конфиг: семантические правила-сторожа. `make lint`. Блокирует make check. Конфиг унаследован от базового комплекта харнеса (zvvvv-abab-vectors); правила затягиваем постепенно (каждое ослабление/ужесточение — через ADR). Целевой релиз системы — NW 7.54 (ADR-003): syntax.version v754 — как там.",
+  "global": {
+    "files": "/src/**/*.*",
+    "skipGeneratedBOPFInterfaces": true,
+    "skipGeneratedFunctionGroups": true,
+    "skipGeneratedGatewayClasses": true,
+    "skipGeneratedPersistentClasses": true,
+    "skipGeneratedProxyClasses": true,
+    "skipGeneratedProxyInterfaces": true,
+    "skipIncludesWithoutMain": true
+  },
+  "syntax": {
+    "version": "v754",
+    "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)"
+  },
+  "rules": {
+    "//check_syntax": "в all: ссылки на объекты целевой системы, отсутствующие в git-выгрузке (иконки GUI status, IF_T100_MESSAGE и т.п.)",
+    "//unknown_types": "в all: та же причина; вернём в гейт после настройки dependencies на репо стандартных объектов",
+    "allowed_object_naming": true,
+    "begin_end_names": true,
+    "check_ddic": true,
+    "empty_statement": true,
+    "main_file_contents": true,
+    "parser_702_chaining": true,
+    "parser_bad_exceptions": true,
+    "parser_error": true,
+    "superfluous_value": true,
+    "when_others_last": true,
+    "whitespace_end": true,
+    "xml_bom": true,
+    "xml_consistency": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "abap-bench-internal",
+  "private": true,
+  "version": "0.1.0",
+  "description": "In-SAP LLM benchmark for ABAP code generation. Node tooling exists only for local verification (abaplint); nothing here ships to SAP.",
+  "scripts": {
+    "lint": "abaplint",
+    "lint:all": "abaplint -c abaplint-all.json"
+  },
+  "devDependencies": {
+    "@abaplint/cli": "^2.120.52"
+  }
+}

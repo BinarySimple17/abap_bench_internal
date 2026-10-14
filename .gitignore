@@ -1,0 +1,12 @@
+# Личное агента (harness): локальные логи и настройки конкретного агента
+session-progress.md
+session-handoff.md
+.agent/
+.zcode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node (только локальная верификация abaplint — в систему не попадает)
+node_modules/
