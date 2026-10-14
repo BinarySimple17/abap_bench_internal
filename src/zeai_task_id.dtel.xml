@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZEAI_TASK_ID</ROLLNAME>
+    <DDLANGUAGE>R</DDLANGUAGE>
+    <HEADLEN>07</HEADLEN>
+    <SCRLEN1>07</SCRLEN1>
+    <SCRLEN2>07</SCRLEN2>
+    <SCRLEN3>07</SCRLEN3>
+    <DDTEXT>Task ID</DDTEXT>
+    <REPTEXT>Task ID</REPTEXT>
+    <SCRTEXT_S>Task ID</SCRTEXT_S>
+    <SCRTEXT_M>Task ID</SCRTEXT_M>
+    <SCRTEXT_L>Task ID</SCRTEXT_L>
+    <DTELMASTER>R</DTELMASTER>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000030</LENG>
+    <OUTPUTLEN>000030</OUTPUTLEN>
+   </DD04V>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -15,15 +15,22 @@
 > Раздел — **только живое состояние** (последняя ✅, WIP, очередь, baseline): пересказы
 > закрытых сессий — в их файлах и архиве; решения владельца — в ADR. Не дублировать.
 
-- Последняя ✅: — (сессий ещё не было; этап M0 закрыт до внедрения харнесса — PLAN.md §11)
+- Последняя ✅: M01 — DDIC офлайн (10 объектов в `src/`, lint 0 issues; системная приёмка — M07)
 - В работе (WIP): —
-- Очередь: M → батч фазы 1 ([ADR-006](adr/ADR-006-phases-offline.md)): M01–M07, старт с M01 (DDIC офлайн); M07 — единственная системная сессия
+- Очередь: M → M02 (ZCL_AI_TASKS + ZAI_IMPORT_TASKS); батч фазы 1 — [ADR-006](adr/ADR-006-phases-offline.md)
 - Baseline: `make check` зелёный на `main` — 2026-10-14 (харнесс — [ADR-001](adr/ADR-001-agent-harness.md); abaplint-гейт — [ADR-002](adr/ADR-002-abaplint-gate.md); NW 7.54 — [ADR-003](adr/ADR-003-nw-754.md); имена `Z*AI_*` — ADR-004; SDK/прокси — ADR-005; фазы/офлайн — ADR-006; пакет `ZAI` — ADR-007)
 
 ## История
 
 ```mermaid
 flowchart TB
+    subgraph d1014 ["2026-10-14"]
+        direction LR
+        M01
+    end
+d1014
+    classDef common fill:#a9d18e,stroke:#375623,color:#1e2f10,stroke-width:2px
+    class M01 common
 ```
 
 ## Владельцы треков
@@ -41,7 +48,6 @@ ID — буква трека + две цифры (`[A-Z]\d{2}`); файл сес
 
 | # | Файл | Этап | Владелец | Зависимости | Оценка | Приоритет | Статус |
 |---|------|------|----------|-------------|--------|-----------|--------|
-| M01 | [M01_session.md](sessions/M01_session.md) | Ф1: DDIC офлайн — ZEAI_/ZTAI_/EZ_AI_RUN в src/ | владелец | — | — | P0 | ⬜ |
 | M02 | [M02_session.md](sessions/M02_session.md) | Ф1: ZCL_AI_TASKS + ZAI_IMPORT_TASKS (парсер, upsert, TASKSET_HASH) | владелец | M01 | — | P0 | ⬜ |
 | M03 | [M03_session.md](sessions/M03_session.md) | Ф1: ZIF_AI_LLM_CLIENT + ZCL_AI_LLM_MOCK + ZCX_AI_LLM | владелец | M01 | — | P0 | ⬜ |
 | M04 | [M04_session.md](sessions/M04_session.md) | Ф1: ZCL_AI_CANON + ZCL_AI_CHECK | владелец | M01 | — | P0 | ⬜ |

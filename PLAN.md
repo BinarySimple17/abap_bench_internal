@@ -151,10 +151,10 @@ PROGRAM zai_probe.
 |---|---|---|
 | `ZTAI_TASK` | `TASK_ID` (char30, напр. `humaneval_013`) | `PROMPT`, `TEST_SOURCE`, `CANONICAL` (STRING); `METHOD_NAME`, `CATEGORY`, `ACTIVE`, `TASK_VERSION`, `SOURCE_INFO`, changed-by/at |
 | `ZTAI_MODEL` | `MODEL_ID` (char30) | `DISPLAY_NAME`, `SDK_PROFILE` (ссылка на конфиг SDK), `TEMPERATURE` (деф. 0.2), `MAX_TOKENS`, `ACTIVE`, заметки |
-| `ZTAI_RUN` | `RUN_ID` (char32 UUID) | `STARTED_AT/ FINISHED_AT`, `STATUS` (R/S/F), snapshot параметров (`REPETITIONS`, `MAX_ATTEMPTS`, `EXECUTE_UNIT_TESTS`, `SYSTEM_PROMPT`-hash), `TASKSET_HASH`, `TRIGGERED_BY` |
+| `ZTAI_RUN` | `RUN_ID` (char32 UUID) | `STARTED_AT/ FINISHED_AT`, `STATUS` (R/S/F), snapshot параметров (`REPETITIONS`, `MAX_ATTEMPTS`, `EXEC_UNIT_TESTS`, `PROMPT_HASH` — имена полей ≤16 симв./без ключевых слов ABAP), `TASKSET_HASH`, `TRIGGERED_BY` |
 | `ZTAI_ROUND` | `RUN_ID, MODEL_ID, TASK_ID, REP_NO, ATTEMPT_NO` | лог раунда: `RESPONSE_RAW`, `CODE` (после фенсов), `CANON_OK`, `SYNTAX_OK`, `SYNTAX_MSG`, `SYNTAX_LINE`, `FEEDBACK_SENT` (STRING; пусто при успехе), `INFRA_FLAG`, `INFRA_MSG`, `LATENCY_MS`, `TOKENS_IN/OUT`, `CREATED_AT` |
 | `ZTAI_RESULT` | `RUN_ID, MODEL_ID, TASK_ID, REP_NO` | итог диалога: `STATUS` (S=success / X=maxed out / I=infra-failed), `ATTEMPTS_USED`, `FIRST_OK_ATTEMPT`, `LATENCY_MS_SUM`, `TOKENS_*_SUM`, `LAST_ERROR` |
-| `ZTAI_SETT` | `KEY` (char30) | `VALUE` (STRING); SM30-совместимо |
+| `ZTAI_SETT` | `SETT_KEY` (char30) | `SETT_VALUE` (STRING); ключи настроек — из таблицы §4.3 (`KEY`/`VALUE` — ключевые слова ABAP, как имена полей DDIC запрещены) |
 
 STRING-колонки → таблицы с LOB (требование NW ≥ 7.40 — ок для dev).
 
