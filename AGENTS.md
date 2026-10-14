@@ -31,7 +31,8 @@
 | `abaplint.json`, `abaplint-all.json` | abaplint: гейт (`make lint`) и широкий репорт (`make lint-all`); `syntax.version v754` |
 | `package.json` | Node-зависимости только для локального abaplint; в систему не попадает |
 
-ABAP-код (`ZLLBM_*`, список имён — PLAN.md §10) создаётся в SAP-системе и
+ABAP-код (префиксы `Z*AI_*` — [ADR-004](docs/adr/ADR-004-naming-convention.md),
+список имён — PLAN.md §10) создаётся в SAP-системе и
 попадает в репозиторий выгрузкой abapGit в `src/` (FOLDER_LOGIC=FULL,
 контракт синхронизации — `.abapgit.xml`); перенос в обе стороны делает
 человек. Локально системы нет: автоматическая верификация ABAP — abaplint
@@ -80,9 +81,10 @@ DDIC-активация, авторизации, RFC), фиксируется в
   конструкции 7.55+ запрещены (например, `FINAL(...)`); `NW_VERSION` в system
   prompt = 7.54 — модель обязана генерировать под эту версию. Локальный гейт —
   abaplint v754 ([ADR-002](docs/adr/ADR-002-abaplint-gate.md)).
-- LLM SDK — собственный (self-written); адаптер `ZCL_LLBM_LLM_SDK` пишем после
-  получения исходников у автора, до этого движок отлаживается на
-  `ZCL_LLBM_LLM_MOCK`.
+- LLM SDK — Microsoft AI SDK for ABAP ([aisdkforsapabap](https://github.com/microsoft/aisdkforsapabap)):
+  ставится в систему отдельно (abapGit, ADR-005, BL-1); наш адаптер — прокси
+  `ZCL_AI_LLM_SDK_PROXY` за `ZIF_AI_LLM_CLIENT`; до установки SDK движок
+  отлаживается на `ZCL_AI_LLM_MOCK`.
 - Задачи добавляются через файлы `tasks/*.task.txt` + импорт (формат в
   PLAN.md §4.1). Содержание задач после включения в бенчмарк не меняется —
   только `task_version` через реимпорт; тренды считаются в пределах

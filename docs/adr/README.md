@@ -25,6 +25,8 @@ ADR; **изменение** любого из них оформляется ADR 
 | [ADR-001](ADR-001-agent-harness.md) | Внедрение агентного харнесса; без веточной дисциплины, гейт задач — `check_tasks.py` вместо abaplint | Принято (2026-10-14); отличие №2 («без abaplint») отменено ADR-002 |
 | [ADR-002](ADR-002-abaplint-gate.md) | Подключение abaplint-гейта (`make lint`/`lint-all`, конфиги как у zvvvv-abab-vectors) | Принято (2026-10-14) |
 | [ADR-003](ADR-003-nw-754.md) | Целевая версия системы NW 7.54 (вместо NW 7.42); язык ≤7.54, гейт v754 | Принято (2026-10-14) |
+| [ADR-004](ADR-004-naming-convention.md) | Конвенция имён: классы `ZCL_AI_*`, таблицы `ZTAI_*`, элем. данных `ZEAI_*`, структуры `ZSAI_*` (производные `ZIF_AI_*`/`ZCX_AI_*`/`ZAI_*`/`Z_AI_*`); замена `ZLLBM_*` | Принято (2026-10-14) |
+| [ADR-005](ADR-005-llm-sdk.md) | LLM SDK — Microsoft AI SDK for ABAP (aisdkforsapabap, отдельная установка abapGit, BL-1); наш адаптер — прокси `ZCL_AI_LLM_SDK_PROXY` | Принято (2026-10-14) |
 
 ## Как заводить новый ADR
 

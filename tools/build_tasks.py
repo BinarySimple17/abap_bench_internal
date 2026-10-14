@@ -3,8 +3,8 @@
 
 Reads tasks from the source dataset of the Python benchmark
 (LLM-Benchmark-ABAP-Code-Generation) and emits one self-contained task file
-per task into ../tasks/. Each task file is later imported into table ZLLBM_TASK
-by report ZLLBM_IMPORT_TASKS.
+per task into ../tasks/. Each task file is later imported into table ZTAI_TASK
+by report ZAI_IMPORT_TASKS.
 
 Transformations applied (so the task is usable without creating any global
 object in the SAP system):
