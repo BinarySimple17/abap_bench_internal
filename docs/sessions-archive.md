@@ -9,3 +9,4 @@ Mermaid-диаграмма «История» в `docs/sessions.md`. Строк�
 | # | Файл | Этап | Владелец | Зависимости | Оценка | Приоритет | Статус |
 |---|------|------|----------|-------------|--------|-----------|--------|
 | M01 | [M01_session.md](sessions/M01_session.md) | Ф1: DDIC офлайн — ZEAI_/ZTAI_/EZ_AI_RUN в src/ | владелец | — | — | P0 | ✅ 2026-10-14 |
+| M02 | [M02_session.md](sessions/M02_session.md) | Ф1: ZCL_AI_TASKS + ZAI_IMPORT_TASKS (парсер, upsert, TASKSET_HASH) | владелец | M01 | — | P0 | ✅ 2026-10-14 |
