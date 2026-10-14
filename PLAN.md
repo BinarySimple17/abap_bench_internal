@@ -387,7 +387,8 @@ abap_bench_internal/
   Makefile              единый интерфейс команд (make check = lint + гейты)
   harness/              гейты, шаблоны, инструкция харнесса (ADR-001/002)
   docs/                 sessions.md (состояние работ), sessions/, adr/,
-                        ABAP-PITFALLS.md (грабли ABAP — база знаний агента)
+                        ABAP-PITFALLS.md (грабли ABAP — база знаний агента);
+                        reference/ — читшиты SAP, локально (.gitignore)
   backlog/              всё вне скоупа сессий
 ```
 

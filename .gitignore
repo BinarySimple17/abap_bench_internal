@@ -8,5 +8,10 @@ session-handoff.md
 __pycache__/
 *.pyc
 
+# Личный справочник: полная копия SAP-samples/abap-cheat-sheets (MIT).
+# Маршрутизация — docs/reference/README.md + AGENTS.md; если папки нет —
+# git clone --depth 1 https://github.com/SAP-samples/abap-cheat-sheets
+docs/reference/
+
 # Node (только локальная верификация abaplint — в систему не попадает)
 node_modules/

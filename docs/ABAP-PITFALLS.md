@@ -11,7 +11,9 @@ dev-система, что у этого проекта) и способах и�
 Пополнение: каждая новая грабля фиксируется здесь в тот же день, когда найдена
 (пункт отчёта сессии). Семантика языка/ABAP SQL перед правкой сверяется с
 официальной документацией (abapdocu на help.sap.com) и официальным читшитом SAP
-[abap-cheat-sheets](https://github.com/SAP-samples/abap-cheat-sheets)
+[abap-cheat-sheets](https://github.com/SAP-samples/abap-cheat-sheets) —
+локальная копия: `docs/reference/abap-cheat-sheets/`, маршрутизация «тема →
+файл»: `docs/reference/README.md`
 (`03_ABAP_SQL.md` — выражения, агрегаты, деление; демо-классы в тексте доки,
 например `CL_DEMO_SQL_EXPR_ARITH`): гейт-линт семантику SQL-выражений не
 проверяет (#13, #64).
