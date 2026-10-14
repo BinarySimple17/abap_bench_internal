@@ -1,0 +1,96 @@
+@id: humaneval_002
+@source: LLM-Benchmark-ABAP-Code-Generation dataset/prompts/2.txt (MIT)
+@method: truncate_number
+@category: Mathematical Calculation
+@active: true
+
+---PROMPT---
+def truncate_number(number: float) -> float:
+    """ Given a positive floating point number, it can be decomposed into
+    and integer part (largest integer smaller than given number) and decimals
+    (leftover part always smaller than 1).
+
+    Return the decimal part of the number.
+    >>> truncate_number(3.5)
+    0.5
+    """
+
+---CANONICAL---
+CLASS lcl_solution DEFINITION
+  PUBLIC
+  FINAL
+  ABSTRACT.
+
+  PUBLIC SECTION.
+    CLASS-METHODS truncate_number
+      IMPORTING
+        VALUE(number)       TYPE f
+      RETURNING
+        VALUE(decimal_part) TYPE f.
+
+ENDCLASS.
+
+CLASS lcl_solution IMPLEMENTATION.
+
+  METHOD truncate_number.
+    decimal_part = number - floor( number ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+---TEST---
+CLASS ltcl_truncate_number DEFINITION
+  FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS.
+
+  PRIVATE SECTION.
+    METHODS:
+      test_truncate_3_5 FOR TESTING,
+      test_truncate_1_33 FOR TESTING,
+      test_truncate_123_456 FOR TESTING.
+
+ENDCLASS.
+
+CLASS ltcl_truncate_number IMPLEMENTATION.
+
+  METHOD test_truncate_3_5.
+    DATA: lv_input    TYPE f VALUE '3.5',
+          lv_expected TYPE f VALUE '0.5',
+          lv_result   TYPE f,
+          lv_delta    TYPE f VALUE '0.000001'.
+
+    lv_result = lcl_solution=>truncate_number( lv_input ).
+
+    cl_abap_unit_assert=>assert_true(
+      act = xsdbool( abs( lv_result - lv_expected ) LE lv_delta )
+      msg = |Test case 3.5 failed: expected { lv_expected }, got { lv_result }| ).
+  ENDMETHOD.
+
+  METHOD test_truncate_1_33.
+    DATA: lv_input    TYPE f VALUE '1.33',
+          lv_expected TYPE f VALUE '0.33',
+          lv_result   TYPE f,
+          lv_delta    TYPE f VALUE '0.000001'.
+
+    lv_result = lcl_solution=>truncate_number( lv_input ).
+
+    cl_abap_unit_assert=>assert_true(
+      act = xsdbool( abs( lv_result - lv_expected ) LE lv_delta )
+      msg = |Test case 1.33 failed: expected { lv_expected }, got { lv_result }| ).
+  ENDMETHOD.
+
+  METHOD test_truncate_123_456.
+    DATA: lv_input    TYPE f VALUE '123.456',
+          lv_expected TYPE f VALUE '0.456',
+          lv_result   TYPE f,
+          lv_delta    TYPE f VALUE '0.000001'.
+
+    lv_result = lcl_solution=>truncate_number( lv_input ).
+
+    cl_abap_unit_assert=>assert_true(
+      act = xsdbool( abs( lv_result - lv_expected ) LE lv_delta )
+      msg = |Test case 123.456 failed: expected { lv_expected }, got { lv_result }| ).
+  ENDMETHOD.
+
+ENDCLASS.

@@ -1,0 +1,126 @@
+@id: humaneval_001
+@source: LLM-Benchmark-ABAP-Code-Generation dataset/prompts/1.txt (MIT)
+@method: separate_paren_groups
+@category: String Handling
+@active: true
+
+---PROMPT---
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+
+---CANONICAL---
+CLASS lcl_solution DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    CLASS-METHODS: separate_paren_groups
+      IMPORTING paren_string  TYPE string
+      RETURNING VALUE(result) TYPE string_table.
+
+ENDCLASS.
+
+CLASS lcl_solution IMPLEMENTATION.
+
+  METHOD separate_paren_groups.
+    DATA: current_string TYPE string,
+          current_depth  TYPE i VALUE 0,
+          lv_char        TYPE c,
+          lv_index       TYPE i.
+
+    DO strlen( paren_string ) TIMES.
+      lv_index = sy-index - 1.
+      lv_char = paren_string+lv_index(1).
+
+      IF lv_char = '('.
+        current_depth = current_depth + 1.
+        current_string = current_string && lv_char.
+      ELSEIF lv_char = ')'.
+        current_depth = current_depth - 1.
+        current_string = current_string && lv_char.
+        IF current_depth = 0.
+          result = VALUE #( BASE result ( current_string ) ).
+          CLEAR current_string.
+        ENDIF.
+      ENDIF.
+    ENDDO.
+  ENDMETHOD.
+
+ENDCLASS.
+
+---TEST---
+CLASS ltcl_test_separate_paren DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
+
+  PRIVATE SECTION.
+    METHODS: test_case_1 FOR TESTING,
+      test_case_2 FOR TESTING,
+      test_case_3 FOR TESTING,
+      test_case_4 FOR TESTING.
+
+ENDCLASS.
+
+CLASS ltcl_test_separate_paren IMPLEMENTATION.
+
+  METHOD test_case_1.
+    DATA: lv_input    TYPE string VALUE '(()()) ((())) () ((())()())',
+          lt_expected TYPE string_table,
+          lt_actual   TYPE string_table.
+
+    APPEND '(()())' TO lt_expected.
+    APPEND '((()))' TO lt_expected.
+    APPEND '()' TO lt_expected.
+    APPEND '((())()())' TO lt_expected.
+    lt_actual = lcl_solution=>separate_paren_groups( lv_input ).
+
+    cl_abap_unit_assert=>assert_equals( exp = lt_expected act = lt_actual ).
+  ENDMETHOD.
+
+  METHOD test_case_2.
+    DATA: lv_input    TYPE string VALUE '() (()) ((())) (((())))',
+          lt_expected TYPE string_table,
+          lt_actual   TYPE string_table.
+
+    APPEND '()' TO lt_expected.
+    APPEND '(())' TO lt_expected.
+    APPEND '((()))' TO lt_expected.
+    APPEND '(((())))' TO lt_expected.
+    lt_actual = lcl_solution=>separate_paren_groups( lv_input ).
+
+    cl_abap_unit_assert=>assert_equals( exp = lt_expected act = lt_actual ).
+  ENDMETHOD.
+
+  METHOD test_case_3.
+    DATA: lv_input    TYPE string VALUE '(()(())((()))))',
+          lt_expected TYPE string_table,
+          lt_actual   TYPE string_table.
+
+    APPEND '(()(())((())))' TO lt_expected.
+    lt_actual = lcl_solution=>separate_paren_groups( lv_input ).
+
+    cl_abap_unit_assert=>assert_equals( exp = lt_expected act = lt_actual ).
+  ENDMETHOD.
+
+  METHOD test_case_4.
+    DATA: lv_input    TYPE string VALUE '( ) (( )) (( )( ))',
+          lt_expected TYPE string_table,
+          lt_actual   TYPE string_table.
+
+    APPEND '()' TO lt_expected.
+    APPEND '(())' TO lt_expected.
+    APPEND '(()())' TO lt_expected.
+    lt_actual = lcl_solution=>separate_paren_groups( lv_input ).
+
+    cl_abap_unit_assert=>assert_equals( exp = lt_expected act = lt_actual ).
+  ENDMETHOD.
+
+ENDCLASS.
