@@ -39,6 +39,7 @@ SM36: еженедельная периодическая job
              ├─ ZCL_AI_CANON                   снятие ```-фенсов, каноникализация класса/метода
              ├─ ZCL_AI_CHECK                   SYNTAX-CHECK FOR itab   (фаза 1)
              │    └─ (фаза 2) Z_AI_RUN_TESTS / DESTINATION 'NONE' + GENERATE SUBROUTINE POOL
+             ├─ ZCL_AI_SETT                    настройки: ZTAI_SETT + дефолты в коде (ADR-006)
              ├─ ZTAI_ROUND / ZTAI_RESULT       лог раундов и итоги (COMMIT после каждого раунда)
              └─ ENQUEUE EZ_AI_RUN               защита от параллельного запуска; идемпотентный resume
         └─ ZAI_STATUS (live ALV)  /  ZAI_REPORT (итоги + тренды + алерты)
@@ -174,6 +175,10 @@ STRING-колонки → таблицы с LOB (требование NW ≥ 7.4
 | `INFRA_BACKOFF_S` | `30` | пауза между ретраями, сек |
 | `ALERT_MIN_RUNS` | `4` | алерты включаются после N прогонов |
 | `ALERT_DELTA_PCT` | `10` | порог алерта, процентных пунктов |
+
+Дефолты зашиты в коде `ZCL_AI_SETT` ([ADR-006](docs/adr/ADR-006-phases-offline.md)):
+первый прогон работает на пустой `ZTAI_SETT`, строки таблицы — override без
+кода (SM30 после генерации вида на M07).
 
 ---
 
@@ -346,11 +351,11 @@ CALL FUNCTION 'Z_AI_RUN_TESTS'
 | Структуры | `ZSAI_*` — по мере необходимости (напр. `ZSAI_TEST_SUMMARY` — summary фазы 2 для `Z_AI_RUN_TESTS`) |
 | Lock | `EZ_AI_RUN` |
 | Интерфейс | `ZIF_AI_LLM_CLIENT` |
-| Классы | `ZCL_AI_ENGINE`, `ZCL_AI_CANON`, `ZCL_AI_CHECK`, `ZCL_AI_LLM_SDK_PROXY`, `ZCL_AI_LLM_MOCK`, `ZCL_AI_ASSERT`, `ZCL_AI_TASKS` (парсер/импорт) |
+| Классы | `ZCL_AI_ENGINE`, `ZCL_AI_CANON`, `ZCL_AI_CHECK`, `ZCL_AI_SETT` (настройки с кодовыми дефолтами, ADR-006), `ZCL_AI_LLM_SDK_PROXY`, `ZCL_AI_LLM_MOCK`, `ZCL_AI_ASSERT`, `ZCL_AI_TASKS` (парсер/импорт) |
 | Исключения | `ZCX_AI_LLM`, `ZCX_AI_ASSERT` |
 | Отчёты | `ZAI_RUN`, `ZAI_IMPORT_TASKS`, `ZAI_STATUS`, `ZAI_REPORT`, `ZAI_SCHEDULE_JOB` |
 | FM | `Z_AI_RUN_TESTS` (фаза 2, RFC 'NONE') |
-| Maintenance | SM30-виды на `ZTAI_SETT`, `ZTAI_MODEL` (и `ZTAI_TASK` без STRING-полей) |
+| Maintenance | SM30-виды на `ZTAI_SETT`, `ZTAI_MODEL` (и `ZTAI_TASK` без STRING-полей); генерируются в системе на M07 ([ADR-006](docs/adr/ADR-006-phases-offline.md)) |
 
 Конвенция префиксов — [ADR-004](docs/adr/ADR-004-naming-convention.md):
 классы `ZCL_AI_*`, интерфейсы `ZIF_AI_*`, исключения `ZCX_AI_*`, таблицы
@@ -358,20 +363,40 @@ CALL FUNCTION 'Z_AI_RUN_TESTS'
 FM `Z_AI_*`, lock `EZ_AI_*`. При создании объекта проверять занятость имени
 (инфикс `AI` ходовой — см. риски в ADR-004).
 
-Пакет: транспортный `ZAI` или `$TMP` — открытый вопрос §13.
+Пакет: транспортный `ZAI` ([ADR-007](docs/adr/ADR-007-package-zai.md)).
 
 ---
 
-## 11. Дорожная карта
+## 11. Дорожная карта — фазы ([ADR-006](docs/adr/ADR-006-phases-offline.md))
 
-| Этап | Содержание | Критерий приёмки |
+Разработка офлайн: ABAP пишется в `src/` в формате abapGit, локальная
+верификация — только abaplint-гейт; системные проверки собраны в приёмочной
+сессии M07. Соответствие прежним этапам: M1+M2 → фаза 1 (без smoke
+реального SDK); smoke+M3+M4 → фаза 2; M5 → фаза 3.
+
+### Фаза 1 — MVP ручного прогона на MOCK (сессии M01–M07)
+
+| Сессия | Содержание | Критерий приёмки |
 |---|---|---|
-| **M0** ✅ | Папка, план, формат задач, 10 стартовых задач, конвертер | `tasks/*.task.txt` на месте, план согласован |
-| **M1** | DDIC + настройки + `ZCL_AI_TASKS` + импорт задач + реестр моделей + `ZIF_AI_LLM_CLIENT` + MOCK (+ прокси `ZCL_AI_LLM_SDK_PROXY` — после установки aisdkforsapabap, BL-1) | Импорт 10 задач из файла; настройки и модели редактируются; MOCK отвечает |
-| **M2** | Движок фазы 1: CANON, CHECK, цикл раундов, персистентность, resume, ENQUEUE | Сквозной прогон на MOCK (все состояния S/X/I воспроизводятся); падение job на середине и resume работают; smoke с реальным SDK: 1 модель × 1 задача × 1 повтор |
-| **M3** | Первый реальный прогон + `ZAI_STATUS` | Полный прогон 10×5×все активные модели; итоги в БД; CSV выгружен |
-| **M4** | Планировщик + `ZAI_REPORT` + алерты (+email опц.) | Недельная job создана и отработала; тренд и алерты видны после ≥2 прогонов |
-| **M5** | Фаза 2: harness, `Z_AI_RUN_TESTS`, `ZCL_AI_ASSERT`, галка `EXECUTE_UNIT_TESTS`, метрики unit | На включённой галке прогон даёт UnitOK-метрики; на выключенной поведение = фаза 1 |
+| M01 | DDIC офлайн: `ZEAI_*`/`ZTAI_*`/`ZSAI_*` (по мере необходимости) + `EZ_AI_RUN` — XML abapGit в `src/` | все объекты в `src/`, `make lint` зелёный |
+| M02 | `ZCL_AI_TASKS` + `ZAI_IMPORT_TASKS`: парсер §4.1, upsert, `task_version`, `TASKSET_HASH` | код в `src/`, lint зелёный; сквозной импорт — M07 |
+| M03 | `ZIF_AI_LLM_CLIENT` + `ZCL_AI_LLM_MOCK` + `ZCX_AI_LLM` (сценарии S / canon-fail / infra) | код в `src/`, lint зелёный; ответы MOCK — M07 |
+| M04 | `ZCL_AI_CANON` + `ZCL_AI_CHECK` (§5) | код в `src/`, lint зелёный; реальный syntax-check — M07 |
+| M05 | `ZCL_AI_SETT` (дефолты §4.3 в коде) + `ZCL_AI_ENGINE` (§6: S/X/I, ретраи, COMMIT, resume, ENQUEUE) | код в `src/`, lint зелёный; сквозной цикл — M07 |
+| M06 | `ZAI_RUN` (ручной запуск: фильтры, override, resume-RUN_ID) + `ZAI_STATUS` (ALV логов) | код в `src/`, lint зелёный; прогон — M07 |
+| M07 | Деплой в систему (пакет `ZAI`, ADR-007): abapGit pull, активация, SM30-виды (SE54), MOCK в `ZTAI_MODEL`, импорт 10 задач, проверки §13.5, ручной прогон на MOCK | сквозной прогон MOCK 10 задач; логи в `ZTAI_ROUND`/`ZTAI_RESULT` видны в ALV; resume работает |
+
+### Фаза 2 — реальные модели и регулярность (после M07)
+
+BL-1 (установка aisdkforsapabap), `ZCL_AI_LLM_SDK_PROXY` (ADR-005), реестр
+реальных моделей (решение владельца, temperature 0.2), первый реальный
+прогон, `ZAI_REPORT` (тренды/алерты/CSV), планировщик `ZAI_SCHEDULE_JOB`,
+транзакционные коды (§13.4). Email — BL-2 (ALV достаточно, ADR-006).
+
+### Фаза 3 — юнит-тесты (фаза 2 бенчмарка, §7)
+
+`Z_AI_RUN_TESTS`, `ZCL_AI_ASSERT`, галка `EXECUTE_UNIT_TESTS`, метрики
+UnitOK.
 
 Наращивание объёма (больше задач, 180, ERP) — после стабилизации базелина,
 расширением `SELECTED` в конвертере + реимпортом (новый `TASKSET_HASH`,
@@ -404,20 +429,20 @@ abap_bench_internal/
 
 ---
 
-## 13. Открытые вопросы (закрыть на M1)
+## 13. Открытые вопросы
 
 Закрыто:
 
 - **LLM SDK** — Microsoft AI SDK for ABAP (aisdkforsapabap), ставится в
   систему отдельно (abapGit, BL-1); наш прокси-адаптер `ZCL_AI_LLM_SDK_PROXY`
   ([ADR-005](docs/adr/ADR-005-llm-sdk.md)); до установки — отладка на
-  `ZCL_AI_LLM_MOCK`.
+  `ZCL_AI_LLM_MOCK`. Реальный SDK и прокси — фаза 2 ([ADR-006](docs/adr/ADR-006-phases-offline.md)).
 - **Версия системы** — NetWeaver 7.54, языковой уровень до ABAP 7.54 (см. §3, [ADR-003](docs/adr/ADR-003-nw-754.md)).
+- **Пакет** — транспортный `ZAI` ([ADR-007](docs/adr/ADR-007-package-zai.md)).
+- **Email-отчёт** — отложен: ALV достаточно, рассылка BCS — [BL-2](backlog/items/BL-2-email-report.md) (решение владельца, [ADR-006](docs/adr/ADR-006-phases-offline.md)).
 
 Открыто:
 
-1. **Пакет**: транспортный `ZAI` vs `$TMP`.
-2. **Модели на старте**: сколько и какие (temperature 0.2 — как в исходном бенчмарке, кроме моделей с залоченной температурой).
-3. **Email-отчёт** нужен ли еженедельно, или ALV достаточно.
-4. Транзакционные коды для отчётов (удобство) — решить на M3.
-5. **Проверить при первом доступе к системе**: фактический SAP_BASIS/SP (таблица `CVERS`); принимает ли `SYNTAX-CHECK FOR itab` строки типа STRING (если нет — паддинг в строки `c length 255`).
+1. **Модели на старте** (фаза 2): сколько и какие (temperature 0.2 — как в исходном бенчмарке, кроме моделей с залоченной температурой); до фазы 2 работаем на MOCK ([ADR-006](docs/adr/ADR-006-phases-offline.md)).
+2. Транзакционные коды для отчётов (удобство) — решить в фазе 2.
+3. **Проверить на M07 (первый доступ к системе)**: фактический SAP_BASIS/SP (таблица `CVERS`); принимает ли `SYNTAX-CHECK FOR itab` строки типа STRING (если нет — паддинг в строки `c length 255`).

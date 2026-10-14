@@ -17,8 +17,8 @@
 
 - Последняя ✅: — (сессий ещё не было; этап M0 закрыт до внедрения харнесса — PLAN.md §11)
 - В работе (WIP): —
-- Очередь: M → M01 (DDIC + настройки + импорт задач + реестр моделей + MOCK)
-- Baseline: `make check` зелёный на `main` — 2026-10-14 (харнесс — [ADR-001](adr/ADR-001-agent-harness.md); abaplint-гейт — [ADR-002](adr/ADR-002-abaplint-gate.md); целевая версия NW 7.54 — [ADR-003](adr/ADR-003-nw-754.md))
+- Очередь: M → батч фазы 1 ([ADR-006](adr/ADR-006-phases-offline.md)): M01–M07, старт с M01 (DDIC офлайн); M07 — единственная системная сессия
+- Baseline: `make check` зелёный на `main` — 2026-10-14 (харнесс — [ADR-001](adr/ADR-001-agent-harness.md); abaplint-гейт — [ADR-002](adr/ADR-002-abaplint-gate.md); NW 7.54 — [ADR-003](adr/ADR-003-nw-754.md); имена `Z*AI_*` — ADR-004; SDK/прокси — ADR-005; фазы/офлайн — ADR-006; пакет `ZAI` — ADR-007)
 
 ## История
 
@@ -41,11 +41,16 @@ ID — буква трека + две цифры (`[A-Z]\d{2}`); файл сес
 
 | # | Файл | Этап | Владелец | Зависимости | Оценка | Приоритет | Статус |
 |---|------|------|----------|-------------|--------|-----------|--------|
-| M01 | [M01_session.md](sessions/M01_session.md) | M1: DDIC-таблицы, настройки, импорт задач, реестр моделей, ZIF_AI_LLM_CLIENT + MOCK | владелец | — | — | P0 | ⬜ |
-| M02 | — | M2: движок фазы 1 — CANON, CHECK, раунды, персистентность, resume, ENQUEUE | владелец | M01 | — | P0 | ⬜ |
-| M03 | — | M3: первый реальный прогон + ZAI_STATUS | владелец | M02 | — | P1 | ⬜ |
-| M04 | — | M4: планировщик + ZAI_REPORT + алерты | владелец | M03 | — | P1 | ⬜ |
-| M05 | — | M5: фаза 2 — юнит-тесты (GENERATE SUBROUTINE POOL, ZCL_AI_ASSERT) | владелец | M03 | — | P2 | ⬜ |
+| M01 | [M01_session.md](sessions/M01_session.md) | Ф1: DDIC офлайн — ZEAI_/ZTAI_/EZ_AI_RUN в src/ | владелец | — | — | P0 | ⬜ |
+| M02 | [M02_session.md](sessions/M02_session.md) | Ф1: ZCL_AI_TASKS + ZAI_IMPORT_TASKS (парсер, upsert, TASKSET_HASH) | владелец | M01 | — | P0 | ⬜ |
+| M03 | [M03_session.md](sessions/M03_session.md) | Ф1: ZIF_AI_LLM_CLIENT + ZCL_AI_LLM_MOCK + ZCX_AI_LLM | владелец | M01 | — | P0 | ⬜ |
+| M04 | [M04_session.md](sessions/M04_session.md) | Ф1: ZCL_AI_CANON + ZCL_AI_CHECK | владелец | M01 | — | P0 | ⬜ |
+| M05 | [M05_session.md](sessions/M05_session.md) | Ф1: ZCL_AI_SETT + ZCL_AI_ENGINE (цикл S/X/I, resume, ENQUEUE) | владелец | M02, M03, M04 | — | P0 | ⬜ |
+| M06 | [M06_session.md](sessions/M06_session.md) | Ф1: ZAI_RUN (ручной запуск) + ZAI_STATUS (логи, ALV) | владелец | M05 | — | P0 | ⬜ |
+| M07 | [M07_session.md](sessions/M07_session.md) | Ф1: деплой в систему (пакет ZAI) + приёмка сквозным прогоном на MOCK | владелец | M06 | — | P1 | ⬜ |
+| M08 | — | Ф2: BL-1 (SDK) + ZCL_AI_LLM_SDK_PROXY + реестр реальных моделей + первый реальный прогон | владелец | M07 | — | P1 | ⬜ |
+| M09 | — | Ф2: ZAI_REPORT (тренды/алерты/CSV) + планировщик ZAI_SCHEDULE_JOB (+транзакционные коды §13.2) | владелец | M08 | — | P1 | ⬜ |
+| M10 | — | Ф3: юнит-тесты — Z_AI_RUN_TESTS, ZCL_AI_ASSERT, EXECUTE_UNIT_TESTS (PLAN.md §7) | владелец | M07 | — | P2 | ⬜ |
 
 Легенда статусов: ⬜ не начата · ◐ в работе · ✅ завершена (+дата ГГГГ-ММ-ДД).
 
